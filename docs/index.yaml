@@ -8,6 +8,6 @@ entries:
     digest: 16b43f142a12d94d6e6f2ace37db3aaa8475a83e40f994da8b5b8c351aee696b
     name: zcp-tools-backup
     urls:
-    - https://lay126sk.github.io/chart/zcp-tools-backup-0.1.1.tgz
+    - https://lay126.github.io/chart/zcp-tools-backup-0.1.1.tgz
     version: 0.1.1
 generated: 2019-05-31T17:16:33.175559221+09:00
