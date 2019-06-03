@@ -1,30 +1,52 @@
-# Default values for zcp-tools-backup.
+# Default values for tools-backup.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-
 image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
+  kubectl:
+    repository: lachlanevenson/k8s-kubectl
+    tag: v1.9.7
+    pullPolicy: IfNotPresent
+  s3:
+    repository: mesosphere/aws-cli
+    tag: 1.14.5
+    pullPolicy: IfNotPresent
 
-service:
-  type: ClusterIP
-  port: 80
+# Environment variables for each pod of job
+env:
+  BACKUP_DIR: /tmp
+  S3_TRIGGER: /tmp/.flag
+  GITEA_DEPLOY: gitea-gitea
+  JENKINS_DEPLOY: zcp-jenkins
+  #AWS_ACCESS_KEY_ID: 
+  #AWS_SECRET_ACCESS_KEY: 
+  #S3_ENDPOINT: https://xxxx.objectstorage.softlayer.net
+  #S3_BUCKET: zcp-backup
 
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+
+config:
+  data:
+    backup-jenkins.sh:
+      file: resources/backup-jenkins.sh
+    backup-gitea.sh:
+      file: resources/backup-gitea.sh
+    upload-to-s3.sh:
+      file: resources/upload-to-s3.sh
+#   setenv:
+#     file: resources/setenv
+
+# Configruation for each cronjob.
+jenkins:
+  enabled: true
+  schedule: 5 * * * *
+  concurrencyPolicy: Forbid   # https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
+  serviceAccount: 
+
+gitea:
+  enabled: true
+  schedule: 5 * * * *
+  concurrencyPolicy: Forbid
+  serviceAccount: 
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

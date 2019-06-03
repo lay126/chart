@@ -1,0 +1,100 @@
+{{ if .Values.jenkins.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ template "tools-backup.fullname" . }}-jenkins"
+  labels:
+    app: {{ template "tools-backup.name" . }}
+    chart: {{ template "tools-backup.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: "{{ .Values.jenkins.schedule }}"
+  concurrencyPolicy: "{{ .Values.gitea.concurrencyPolicy }}"
+{{ if .Values.jenkins.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: "{{ .Values.gitea.successfulJobsHistoryLimit }}"
+{{- end }}
+{{ if .Values.jenkins.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: "{{ .Values.gitea.failedJobsHistoryLimit }}"
+{{- end }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: kubectl
+            image: {{ .Values.image.kubectl.repository }}:{{ .Values.image.kubectl.tag }}
+            imagePullPolicy: {{ .Values.image.kubectl.pullPolicy }}
+            command: ["/bin/sh"]
+            args: ["/app/scripts/backup-jenkins.sh"]
+            env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val }}
+            {{- end }}
+            resources:
+{{ toYaml .Values.resources | indent 14 }}
+            volumeMounts:
+            - mountPath: /tmp
+              name: backup-dir
+            - mountPath: /app/scripts
+              name: backup-scripts
+            - name: timezone
+              mountPath: /etc/localtime
+{{- if .Values.jenkins.serviceAccountSecretName }}
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: service-account-secret-name
+              readOnly: true
+{{ end }}
+          - name: s3
+            image: {{ .Values.image.s3.repository }}:{{ .Values.image.s3.tag }}
+            imagePullPolicy: {{ .Values.image.s3.pullPolicy }}
+            command: ["/bin/sh"]
+            args: ["/app/scripts/upload-to-s3.sh"]
+            env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val }}
+            {{- end }}
+            resources:
+{{ toYaml .Values.resources | indent 14 }}
+            volumeMounts:
+            - mountPath: /tmp
+              name: backup-dir
+            - mountPath: /app/scripts
+              name: backup-scripts
+            - name: timezone
+              mountPath: /etc/localtime
+          #securityContext:
+          #  runAsUser: 0
+          serviceAccount: {{ .Values.jenkins.serviceAccount }}
+          serviceAccountName: {{ .Values.jenkins.serviceAccount }}
+          volumes:
+          - name: backup-dir
+            emptyDir: {}
+          - name: backup-scripts
+            configMap:
+              defaultMode: 0755
+              name: "{{ template "tools-backup.fullname" . }}-script"
+          - name: timezone
+            mountPath: /etc/localtime
+{{- if .Values.jenkins.serviceAccountSecretName }}
+          - name: service-account-secret-name
+            secret:
+              defaultMode: 0644
+              secretName: {{ .Values.jenkins.serviceAccountSecretName }}
+{{ end }}
+        {{- with .Values.jenkins.nodeSelector }}
+          nodeSelector:
+{{ toYaml . | indent 12 }}
+        {{- end }}
+        {{- with .Values.affinity }}
+          affinity:
+{{ toYaml . | indent 12 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+          tolerations:
+{{ toYaml . | indent 12 }}
+        {{- end }}
+          restartPolicy: OnFailure
+{{ end }}

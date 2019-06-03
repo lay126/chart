@@ -1,0 +1,5 @@
+export BACKUP_DIR=/tmp
+export GITEA_DEPLOY=git-gitea
+export JENKINS_DEPLOY=ci-jenkins
+
+export S3_TRIGGER=/tmp/.flag

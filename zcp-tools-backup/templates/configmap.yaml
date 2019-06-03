@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ template "tools-backup.fullname" . }}-script"
+data:
+{{- range $key, $val := .Values.config.data }}
+{{- if $val.file }}
+  {{ $key }}: |-
+  {{- print "\n" ($.Files.Get $val.file) | indent 4 }}
+{{- end }}
+{{- if $val.string }}
+  {{ $key }}: |-
+  {{- print "\n" $val.string | indent 4 }}
+{{- end }}
+{{- end }}
