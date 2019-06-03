@@ -39,12 +39,12 @@ spec:
               name: backup-dir
             - mountPath: /app/scripts
               name: backup-scripts
-            - name: timezone
-              mountPath: /etc/localtime
+            - mountPath: /etc/localtime
+              name: timezone
           volumes:
-          - name: timezone
-            hostPath:
+          - hostPath:
               path: /usr/share/zoneinfo/Asia/Seoul
+            name: timezone
 {{- if .Values.jenkins.serviceAccountSecretName }}
             - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               name: service-account-secret-name
@@ -67,12 +67,12 @@ spec:
               name: backup-dir
             - mountPath: /app/scripts
               name: backup-scripts
-            - name: timezone
-              mountPath: /etc/localtime
+            - mountPath: /etc/localtime
+              name: timezone
           volumes:
-          - name: timezone
-            hostPath:
+          - hostPath:
               path: /usr/share/zoneinfo/Asia/Seoul
+            name: timezone
           #securityContext:
           #  runAsUser: 0
           serviceAccount: {{ .Values.jenkins.serviceAccount }}
@@ -84,8 +84,6 @@ spec:
             configMap:
               defaultMode: 0755
               name: "{{ template "tools-backup.fullname" . }}-script"
-          - name: timezone
-            mountPath: /etc/localtime
 {{- if .Values.jenkins.serviceAccountSecretName }}
           - name: service-account-secret-name
             secret:

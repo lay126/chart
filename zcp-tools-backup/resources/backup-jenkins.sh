@@ -20,10 +20,10 @@ fi
 
 echo -e "\n\n+ Copy... [pod/$POD -> $BACKUP]"
 time kubectl exec -it $POD mkdir appdata
-time kubectl exec -it $POD -- cp -rf /var/jenkins_home /appdata/$BACKUP_NAME
+#time kubectl exec -it $POD -- cp -rf /var/jenkins_home /appdata/$BACKUP_NAME
 
 echo -e '\n\n+ Compress...'
-time kubectl exec -it $POD -- tar -zcvf /appdata/$BACKUP_NAME.tgz /appdata/$BACKUP_NAME
+time kubectl exec -it $POD -- tar -zcvf /appdata/$BACKUP_NAME.tgz /var/jenkins_home
 time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME
 
 
