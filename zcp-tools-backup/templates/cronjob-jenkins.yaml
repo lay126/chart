@@ -39,17 +39,17 @@ spec:
               name: backup-dir
             - mountPath: /app/scripts
               name: backup-scripts
-            - name: timezone
-              mountPath: /etc/localtime
+#             - name: timezone
+#               mountPath: /etc/localtime
 {{- if .Values.jenkins.serviceAccountSecretName }}
             - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               name: service-account-secret-name
               readOnly: true
 {{ end }}
-          volumes:
-          - hostPath:
-            path: /usr/share/zoneinfo/Asia/Seoul
-            name: timezone-config
+#           volumes:
+#           - hostPath:
+#             path: /usr/share/zoneinfo/Asia/Seoul
+#             name: timezone-config
           - name: s3
             image: {{ .Values.image.s3.repository }}:{{ .Values.image.s3.tag }}
             imagePullPolicy: {{ .Values.image.s3.pullPolicy }}
@@ -67,12 +67,12 @@ spec:
               name: backup-dir
             - mountPath: /app/scripts
               name: backup-scripts
-            - name: timezone
-              mountPath: /etc/localtime
-          volumes:
-          - hostPath:
-            path: /usr/share/zoneinfo/Asia/Seoul
-            name: timezone-config
+#             - name: timezone
+#               mountPath: /etc/localtime
+#           volumes:
+#           - hostPath:
+#             path: /usr/share/zoneinfo/Asia/Seoul
+#             name: timezone-config
           #securityContext:
           #  runAsUser: 0
           serviceAccount: {{ .Values.jenkins.serviceAccount }}
