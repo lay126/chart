@@ -69,14 +69,14 @@ spec:
               name: backup-scripts
             - mountPath: /etc/localtime
               name: timezone
-          volumes:
-          - hostPath:
-              path: /usr/share/zoneinfo/Asia/Seoul
-            name: timezone
           #securityContext:
           #  runAsUser: 0
           serviceAccount: {{ .Values.jenkins.serviceAccount }}
           serviceAccountName: {{ .Values.jenkins.serviceAccount }}
+          volumes:
+          - hostPath:
+              path: /usr/share/zoneinfo/Asia/Seoul
+            name: timezone
           volumes:
           - name: backup-dir
             emptyDir: {}
@@ -86,7 +86,6 @@ spec:
               name: "{{ template "tools-backup.fullname" . }}-script"
           - mountPath: /etc/localtime
             name: timezone
-          volumes:
           - hostPath:
               path: /usr/share/zoneinfo/Asia/Seoul
             name: timezone
