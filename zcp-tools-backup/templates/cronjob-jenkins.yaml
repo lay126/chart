@@ -41,15 +41,15 @@ spec:
               name: backup-scripts
             - mountPath: /etc/localtime
               name: timezone
-          volumes:
-          - hostPath:
-              path: /usr/share/zoneinfo/Asia/Seoul
-            name: timezone
 {{- if .Values.jenkins.serviceAccountSecretName }}
             - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
               name: service-account-secret-name
               readOnly: true
-{{ end }}
+          Volumes: 
+          - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul
+{{ end }} 
           - name: s3
             image: {{ .Values.image.s3.repository }}:{{ .Values.image.s3.tag }}
             imagePullPolicy: {{ .Values.image.s3.pullPolicy }}
@@ -84,6 +84,9 @@ spec:
             configMap:
               defaultMode: 0755
               name: "{{ template "tools-backup.fullname" . }}-script"
+          - name: timezone
+            hostPath:
+              path: /usr/share/zoneinfo/Asia/Seoul
 {{- if .Values.jenkins.serviceAccountSecretName }}
           - name: service-account-secret-name
             secret:
