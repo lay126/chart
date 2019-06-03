@@ -6,7 +6,7 @@ BIN="$( cd "$( dirname "$0" )" && pwd )"   # https://stackoverflow.com/a/2043474
 #source $BIN/setenv   # https://stackoverflow.com/a/13360474
 #cat $BIN/setenv      # for logging
 
-BACKUP_NAME=jenkins-home-$(TZ='' date +%Y%m%d-%H%M)
+BACKUP_NAME=jenkins-home-$(TZ='KST+9' date +%Y%m%d-%H%M)
 BACKUP=$BACKUP_DIR/$BACKUP_NAME
 mkdir -p $BACKUP
 
