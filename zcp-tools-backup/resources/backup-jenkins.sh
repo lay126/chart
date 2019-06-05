@@ -6,7 +6,7 @@ BIN="$( cd "$( dirname "$0" )" && pwd )"   # https://stackoverflow.com/a/2043474
 #source $BIN/setenv   # https://stackoverflow.com/a/13360474
 #cat $BIN/setenv      # for logging
 
-BACKUP_NAME=jenkins-home-$(TZ='KST-9' date +%Y%m%d-%H%M)
+BACKUP_NAME=jenkins-home-$(date +%Y%m%d-%H%M)
 BACKUP=$BACKUP_DIR/$BACKUP_NAME
 mkdir -p $BACKUP
 
@@ -23,11 +23,11 @@ time kubectl exec -it $POD mkdir appdata
 #time kubectl exec -it $POD -- cp -rf /var/jenkins_home /appdata/$BACKUP_NAME
 
 echo -e '\n\n+ Compress...'
-time kubectl exec -it $POD -- tar -zcvf /appdata/$BACKUP_NAME.tgz /var/jenkins_home
+time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home
 time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME
 
 
-time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP
+time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP_NAME
 
 ls -l $BACKUP
 ls -l $BACKUP_DIR
