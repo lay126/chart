@@ -25,7 +25,7 @@ time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_ho
 echo -e '\n\n+ [end] end Compress...'
 
 echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
-time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP_NAME.tgz
+time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP.tgz
 echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
 
 ls -l $BACKUP
