@@ -35,4 +35,4 @@ echo -e "\n\n+ [backup] start Upload..."
 echo 'START' > $S3_TRIGGER
 echo -e "\n\n+ [backup] end Upload..."
 
-time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz 
+#time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz 
