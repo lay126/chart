@@ -22,11 +22,10 @@ time kubectl exec -it $POD mkdir appdata
 
 echo -e '\n\n+ [backup] start Compress...'
 time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home
-time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME
 echo -e '\n\n+ [end] end Compress...'
 
 echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
-time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP_NAME
+time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP_NAME.tgz
 echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
 
 ls -l $BACKUP
@@ -37,4 +36,4 @@ echo -e "\n\n+ [backup] start Upload..."
 echo 'START' > $S3_TRIGGER
 echo -e "\n\n+ [backup] end Upload..."
 
-time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz
+time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz 

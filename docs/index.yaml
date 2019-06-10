@@ -3,11 +3,11 @@ entries:
   zcp-tools-backup:
   - apiVersion: v1
     appVersion: "1.0"
-    created: 2019-06-10T11:43:56.399255249+09:00
+    created: 2019-06-10T13:26:53.497990931+09:00
     description: A Helm chart for Backup
-    digest: 7e15aaf0ca6ac938a5b115c18898dbefee6c321b4f3704d3b604e6fb0690188f
+    digest: bc7acc3f5226b881a273f772228a04717144e6c35d7266a20fb0a0f4a8e0b168
     name: zcp-tools-backup
     urls:
     - https://lay126.github.io/chart/zcp-tools-backup-1.0.1.tgz
     version: 1.0.1
-generated: 2019-06-10T11:43:56.397698488+09:00
+generated: 2019-06-10T13:26:53.496023039+09:00
