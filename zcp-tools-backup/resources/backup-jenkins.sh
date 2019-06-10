@@ -18,19 +18,23 @@ if [ -z "$POD" ]; then
 	exit 1
 fi
 
-echo -e "\n\n+ Copy... [pod/$POD -> $BACKUP]"
 time kubectl exec -it $POD mkdir appdata
-#time kubectl exec -it $POD -- cp -rf /var/jenkins_home /appdata/$BACKUP_NAME
 
-echo -e '\n\n+ Compress...'
+echo -e '\n\n+ [backup] start Compress...'
 time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home
 time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME
+echo -e '\n\n+ [end] end Compress...'
 
-
+echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
 time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP_NAME
+echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
 
 ls -l $BACKUP
 ls -l $BACKUP_DIR
 
 # Trigger s3 upload
+echo -e "\n\n+ [backup] start Upload..."
 echo 'START' > $S3_TRIGGER
+echo -e "\n\n+ [backup] end Upload..."
+
+time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz
