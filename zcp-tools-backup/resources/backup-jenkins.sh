@@ -21,7 +21,8 @@ fi
 time kubectl exec -it $POD mkdir appdata
 
 echo -e '\n\n+ [backup] start Compress...'
-time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home && echo done#> /appdata/$BACKUP_NAME.log
+time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home && echo done 
+#> /appdata/$BACKUP_NAME.log
 echo -e '\n\n+ [backup] end Compress...'
 time kubectl exec -it $POD -- du -ah /appdata
 
