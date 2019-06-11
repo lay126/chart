@@ -6,8 +6,6 @@ BIN="$( cd "$( dirname "$0" )" && pwd )"   # https://stackoverflow.com/a/2043474
 #source $BIN/setenv   # https://stackoverflow.com/a/13360474
 #cat $BIN/setenv      # for logging
 
-SIGNAL=1
-
 BACKUP_NAME=jenkins-home-$(date +%Y%m%d-%H%M)
 BACKUP=$BACKUP_DIR/$BACKUP_NAME
 mkdir -p $BACKUP
@@ -23,22 +21,20 @@ fi
 time kubectl exec -it $POD mkdir appdata
 
 echo -e '\n\n+ [backup] start Compress...'
-time kubectl exec -it $POD -- tar -zvcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home && SIGNAL=0
+time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home && echo done#> /appdata/$BACKUP_NAME.log
+echo -e '\n\n+ [backup] end Compress...'
+time kubectl exec -it $POD -- du -ah /appdata
 
-if ["$SIGNAL" = 0]; then
-	echo -e '\n\n+ [end] end Compress...'
-	time kubectl exec -it $POD -- du -ah /appdata
+echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
+time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP.tgz
+echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
 
-	echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
-	time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP.tgz
-	echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
+ls -l $BACKUP_DIR
 
-	ls -l $BACKUP_DIR
+# Trigger s3 upload
+echo -e "\n\n+ [backup] Trigger Upload..."
+echo 'START' > $S3_TRIGGER
 
-	# Trigger s3 upload
-	echo -e "\n\n+ [backup] Trigger Upload..."
-	echo 'START' > $S3_TRIGGER
+#time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz 
 
-	#time kubectl exec -it $POD -- rm -rf appdata/$BACKUP_NAME.tgz 
-fi
 
