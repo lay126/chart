@@ -21,11 +21,8 @@ fi
 time kubectl exec -it $POD mkdir appdata
 
 echo -e '\n\n+ [backup] start Compress...'
-time kubectl exec -it $POD -- tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home || echo 'tar done' > /appdata/.$BACKUP_NAME 
-#> /appdata/$BACKUP_NAME.log
+time kubectl exec -it $POD -- bash -c "tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home || echo 'tar done' > /appdata/$BACKUP_NAME.log"
 echo -e '\n\n+ [backup] end Compress...'
-
-while [ ! -f $POD:/appdata/.$BACKUP_NAME  ]; do sleep 2s; done
 
 echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
 time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP.tgz
