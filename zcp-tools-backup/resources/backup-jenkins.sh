@@ -21,9 +21,13 @@ fi
 time kubectl exec -it $POD mkdir appdata
 
 echo -e '\n\n+ [backup] start Compress...'
-time kubectl exec $POD --request-timeout=0 -- bash -c "tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home "
+time kubectl exec $POD --request-timeout=0 -- bash -c "tar -zcf /appdata/$BACKUP_NAME.tgz /var/jenkins_home && echo 'tar success'" > tar_return.txt
 echo -e '\n\n+ [backup] end Compress...'
 
+if [ ! -f tar_return.txt ]; then
+  echo 'ERROR TAR' > $S3_TRIGGER
+  exit 1
+fi
 echo -e "\n\n+ [backup] start Copy... [pod/$POD -> $BACKUP]"
 time kubectl cp $POD:/appdata/$BACKUP_NAME.tgz $BACKUP.tgz
 echo -e "\n\n+ [backup] end Copy... [pod/$POD -> $BACKUP]"
